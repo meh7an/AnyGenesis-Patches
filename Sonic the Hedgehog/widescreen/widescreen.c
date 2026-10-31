@@ -34,12 +34,14 @@
 #define RIGHT_LIMIT 0xFFF72Au
 
 /* The title screen's masking object: left of the picture it parks 32-pixel sprites that use
-   up each line's sprite pixels, so the emblem hides Sonic's lower half. Its frame number,
-   and the first of 16 tiles the title leaves empty, which draw nothing and still count. */
+   up each line's sprite pixels, so the emblem hides Sonic's lower half; they start 128
+   pixels left of the object's X. Its frame number, and an X (VDP coordinates) that puts
+   them at -96 to -64 on screen, past the left margin: a sprite counts against its line's
+   limits wherever it is. */
 #define MASK_FRAME 2u
-#define EMPTY_TILES 0x0520u
+#define MASK_X 0xA0u
 #define OBJECT_FRAME 0x1Au
-#define OBJECT_ART 0x02u
+#define OBJECT_X 0x08u
 
 /* The sprite builder: where it starts on the object in a0, where it moves on to the next
    one, and where it finishes the table. */
@@ -288,12 +290,12 @@ uint32_t wide_sprite_left(AgState *s, uint32_t pc)
     return pc;
 }
 
-/* Where the title's "TM" and masking objects are told apart: the masking one draws from
-   empty tiles, so the left margin can show the title's background while it still masks. */
+/* Where the title's "TM" and masking objects are told apart: the masking one moves left of
+   the wide view, so the left margin can show the title's background while it still masks. */
 uint32_t wide_title_mask(AgState *s, uint32_t pc)
 {
     if (ag_ram_read8(s, s->a[0] + OBJECT_FRAME) == MASK_FRAME) {
-        ag_ram_write16(s, s->a[0] + OBJECT_ART, EMPTY_TILES);
+        ag_ram_write16(s, s->a[0] + OBJECT_X, MASK_X);
     }
     return pc;
 }

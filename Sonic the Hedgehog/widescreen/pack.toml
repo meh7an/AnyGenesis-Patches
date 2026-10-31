@@ -225,7 +225,7 @@ address = 0x00D6A0
 file = "widescreen.c"
 function = "wide_sprite_left"
 
-# The title's masking sprites draw from empty tiles, where the "TM" and masking objects
+# The title's masking sprites move left of the wide view, where the "TM" and masking objects
 # part.
 [[hook]]
 address = 0x00A6E4
