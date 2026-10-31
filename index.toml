@@ -1,0 +1,39 @@
+# The Marketplace index, written by `cargo xtask patch-index` in meh7an/AnyGenesis.
+# Do not edit; run it again after committing the packs.
+
+format = 1
+commit = "cfb65c78d5c8eb1f363285e257a52f8dac29064d"
+
+[[pack]]
+id = "Sonic the Hedgehog/widescreen"
+name = "Widescreen"
+description = "Sonic 1 REV00 at 400 pixels wide: 40 more on each side, the HUD in the wide corner."
+rom = "6ddb7de1e17e7f6cdb88927bd906352030daa194"
+runs_code = true
+
+[[pack.file]]
+path = "pack.toml"
+size = 7320
+sha256 = "056caccf8ba7fc0f9b0d5c6a39dda17a5c7aeae6f1d7b9676dc73f6d1c62c914"
+
+[[pack.file]]
+path = "widescreen.c"
+size = 20449
+sha256 = "d304c3b68bd9dc9e0deded41ac1c1edd76b9420d8ece02490ca194375270be9a"
+
+[[pack]]
+id = "Sonic the Hedgehog/widescreen REV01"
+name = "Widescreen"
+description = "Sonic 1 REV01 at 400 pixels wide: 40 more on each side, the HUD in the wide corner."
+rom = "69e102855d4389c3fd1a8f3dc7d193f8eee5fe5b"
+runs_code = true
+
+[[pack.file]]
+path = "pack.toml"
+size = 7890
+sha256 = "aeb5e4ef05ddea873b0129020796365461e6846f148f6df245a58f8721f8d882"
+
+[[pack.file]]
+path = "widescreen.c"
+size = 20449
+sha256 = "8d8115dce9f88c326d7a7e2a16231f967408997e2738ce5dc7813ad59af5f6a4"
