@@ -2,6 +2,7 @@
 # changed immediates or our own data; widescreen.c holds the hooks.
 
 name = "Widescreen"
+description = "Sonic 1 REV01 at 400 pixels wide: 40 more on each side, the HUD in the wide corner."
 rom = "69e102855d4389c3fd1a8f3dc7d193f8eee5fe5b"
 
 # Level streaming, in the foreground and the background; the level's first draw is a hook.
