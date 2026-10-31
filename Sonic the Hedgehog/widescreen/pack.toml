@@ -1,0 +1,320 @@
+# Sonic 1 REV00 at 400 pixels (40 more on each side). Every byte below is one of our own
+# changed immediates or our own data; widescreen.c holds the hooks.
+
+name = "Widescreen"
+rom = "6ddb7de1e17e7f6cdb88927bd906352030daa194"
+
+# Level streaming, in the foreground and the background; the level's first draw is a hook.
+# The game draws a strip when the camera enters a new 16-pixel block, wherever in the block
+# it is that frame, so every strip offset is a whole number of blocks: 48 pixels past the
+# console's picture on each side, the 40 shown and 8 spare. A new block strip starts 64
+# pixels left of the camera (moveq #-64).
+[[patch]]
+offset = 0x0068FB
+bytes = "C0"
+
+[[patch]]
+offset = 0x006903
+bytes = "C0"
+
+[[patch]]
+offset = 0x006913
+bytes = "C0"
+
+[[patch]]
+offset = 0x00691D
+bytes = "C0"
+
+[[patch]]
+offset = 0x00692B
+bytes = "C0"
+
+[[patch]]
+offset = 0x006933
+bytes = "C0"
+
+[[patch]]
+offset = 0x006963
+bytes = "C0"
+
+[[patch]]
+offset = 0x00696B
+bytes = "C0"
+
+[[patch]]
+offset = 0x00697D
+bytes = "C0"
+
+[[patch]]
+offset = 0x006987
+bytes = "C0"
+
+[[patch]]
+offset = 0x006997
+bytes = "C0"
+
+[[patch]]
+offset = 0x00699F
+bytes = "C0"
+
+[[patch]]
+offset = 0x006A17
+bytes = "C0"
+
+[[patch]]
+offset = 0x006A1F
+bytes = "C0"
+
+# The column ahead of the camera is drawn at 320 + 48 (low byte of #$0170).
+[[patch]]
+offset = 0x006943
+bytes = "70"
+
+[[patch]]
+offset = 0x00694D
+bytes = "70"
+
+[[patch]]
+offset = 0x0069C9
+bytes = "70"
+
+[[patch]]
+offset = 0x0069D3
+bytes = "70"
+
+[[patch]]
+offset = 0x006A57
+bytes = "70"
+
+[[patch]]
+offset = 0x006A61
+bytes = "70"
+
+# The lower background's left strip waits until its X reaches 64, as it waited for 16.
+[[patch]]
+offset = 0x006A03
+bytes = "40"
+
+# A foreground row is 28 blocks (448 pixels, -64 to +384) long, not 22: moveq #27.
+[[patch]]
+offset = 0x006AD9
+bytes = "1B"
+
+# Sonic's right boundary is the right limit and 320 - 24 + 40 pixels (#$0150), in a boss
+# fight, where the game stops him at the view's edge; the game's 64 more outside one let him
+# run out of the wide view at the end of an act. The left boundary is a hook.
+[[patch]]
+offset = 0x013327
+bytes = "50"
+
+[[hook]]
+address = 0x01331C
+file = "widescreen.c"
+function = "wide_sonic_left_bound"
+
+# The sprite builder keeps objects up to 320 + 40 (its left test is a hook).
+[[patch]]
+offset = 0x00D6AD
+bytes = "68"
+
+# The two on-screen checks: right tests at 320 + 2 * 40, against a screen X the hooks bias by
+# 40.
+[[patch]]
+offset = 0x00D88B
+bytes = "90"
+
+[[patch]]
+offset = 0x00D8BF
+bytes = "90"
+
+# The HUD sits at the wide view's corner: X $90 - 40.
+[[patch]]
+offset = 0x01C561
+bytes = "68"
+
+# The water surface takes its mappings from 0x071400 instead.
+[[patch]]
+offset = 0x0110DF
+bytes = "071400"
+
+# Our own water surface mappings in the unused padding before the sound driver: the same
+# six frames (three animated, three for a paused game) and tiles, four 32-pixel pieces 64
+# apart from -128 to +64 (where the game has three from -96), and eight side by side from
+# -128 to +96 for a paused game (six from -96).
+[[patch]]
+offset = 0x071400
+bytes = """
+000C 0021 0036 004B 0074 009D
+04 FD0D000080 FD0D0000C0 FD0D000000 FD0D000040
+04 FD0D000880 FD0D0008C0 FD0D000800 FD0D000840
+04 FD0D080080 FD0D0800C0 FD0D080000 FD0D080040
+08 FD0D000080 FD0D0000A0 FD0D0000C0 FD0D0000E0 FD0D000000 FD0D000020 FD0D000040 FD0D000060
+08 FD0D000880 FD0D0008A0 FD0D0008C0 FD0D0008E0 FD0D000800 FD0D000820 FD0D000840 FD0D000860
+08 FD0D080080 FD0D0800A0 FD0D0800C0 FD0D0800E0 FD0D080000 FD0D080020 FD0D080040 FD0D080060
+"""
+
+# Once a frame, at the vertical interrupt's entry: the visible margins.
+[[hook]]
+address = 0x000B10
+file = "widescreen.c"
+function = "wide_view"
+
+# The camera keeps 40 pixels more from the act's left edge: where an act starts, and where each
+# frame's horizontal scroll stores the new camera X.
+[[hook]]
+address = 0x0060E2
+file = "widescreen.c"
+function = "wide_camera_start"
+
+[[hook]]
+address = 0x0065BE
+file = "widescreen.c"
+function = "wide_camera_side"
+
+[[hook]]
+address = 0x0065E4
+file = "widescreen.c"
+function = "wide_camera_step"
+
+# The background's strips never start left of X 0, where its layout lookup reads the
+# foreground's row: after each `moveq #-64,d5` of the background's top and bottom rows and
+# its left column.
+[[hook]]
+address = 0x006964
+file = "widescreen.c"
+function = "wide_background_strip"
+
+[[hook]]
+address = 0x00696C
+file = "widescreen.c"
+function = "wide_background_strip"
+
+[[hook]]
+address = 0x00697E
+file = "widescreen.c"
+function = "wide_background_strip"
+
+[[hook]]
+address = 0x006988
+file = "widescreen.c"
+function = "wide_background_strip"
+
+[[hook]]
+address = 0x006998
+file = "widescreen.c"
+function = "wide_background_strip"
+
+[[hook]]
+address = 0x0069A0
+file = "widescreen.c"
+function = "wide_background_strip"
+
+# The level's first draw, a row at a time: after each `moveq #0,d5`.
+[[hook]]
+address = 0x006C88
+file = "widescreen.c"
+function = "wide_first_draw"
+
+[[hook]]
+address = 0x006C92
+file = "widescreen.c"
+function = "wide_first_draw"
+
+[[hook]]
+address = 0x00D6A0
+file = "widescreen.c"
+function = "wide_sprite_left"
+
+# The title's masking sprites draw from empty tiles, where the "TM" and masking objects
+# part.
+[[hook]]
+address = 0x00A6E4
+file = "widescreen.c"
+function = "wide_title_mask"
+
+# A sprite piece that would wrap round from past the right margin into the left one is put
+# off the picture instead: before each `andi.w #$1FF,d0` of the four piece writers.
+[[hook]]
+address = 0x00D786
+file = "widescreen.c"
+function = "wide_sprite_wrap"
+
+[[hook]]
+address = 0x00D7D4
+file = "widescreen.c"
+function = "wide_sprite_wrap"
+
+[[hook]]
+address = 0x00D81A
+file = "widescreen.c"
+function = "wide_sprite_wrap"
+
+[[hook]]
+address = 0x00D86E
+file = "widescreen.c"
+function = "wide_sprite_wrap"
+
+# The sprite table keeps the game's own sprites first: objects wholly in a margin are put
+# off where the builder keeps an object, and built after the rest where it ends the table.
+[[hook]]
+address = 0x00D6B0
+file = "widescreen.c"
+function = "wide_sprite_defer"
+
+[[hook]]
+address = 0x00D726
+file = "widescreen.c"
+function = "wide_sprite_next"
+
+[[hook]]
+address = 0x00D736
+file = "widescreen.c"
+function = "wide_sprite_done"
+
+[[hook]]
+address = 0x00D882
+file = "widescreen.c"
+function = "wide_visible_left"
+
+[[hook]]
+address = 0x00D8B4
+file = "widescreen.c"
+function = "wide_visible_left"
+
+[[hook]]
+address = 0x011114
+file = "widescreen.c"
+function = "wide_surface_x"
+
+# The special stage: its block grid's blocks in the margins, and the ring of cells around
+# the grid, are drawn after the game's own: where a block is tested, the next block and
+# where the grid ends.
+[[hook]]
+address = 0x01B222
+file = "widescreen.c"
+function = "wide_special_block"
+
+[[hook]]
+address = 0x01B268
+file = "widescreen.c"
+function = "wide_special_next"
+
+[[hook]]
+address = 0x01B276
+file = "widescreen.c"
+function = "wide_special_done"
+
+# The special stage's fade-out and results run with the game mode back at the level's: they
+# are marked from where the stage starts to finish to where the next level loads.
+[[hook]]
+address = 0x00478A
+file = "widescreen.c"
+function = "wide_special_finish"
+
+[[hook]]
+address = 0x0037A2
+file = "widescreen.c"
+function = "wide_level_load"
+
+[flags]
+widescreen = 40
